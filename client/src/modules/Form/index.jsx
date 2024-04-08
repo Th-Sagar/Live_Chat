@@ -56,7 +56,7 @@ const Form = ({ isSigninPage = false }) => {
         <Button
           label={isSigninPage ? "Sign in" : "Sign up"}
           type="submit"
-          className="w-1/2 mb-2"
+          className="w-[50%] mb-2"
         />
       </form>
 
