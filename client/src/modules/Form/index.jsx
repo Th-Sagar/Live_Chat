@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
+import {useNavigate} from "react-router-dom";
+
 
 const Form = ({ isSigninPage = false }) => {
   const [data, setData] = useState({
@@ -11,8 +13,10 @@ const Form = ({ isSigninPage = false }) => {
     password: "",
     
   });
+  const navigate = useNavigate();
   return (
-    <div className="bg-white w-[600px] h-[800px] shadow-lg rounded-lg flex flex-col justify-center items-center">
+   <div className=" bg-light h-screen flex items-center justify-center">
+     <div className="bg-white w-[600px] h-[800px] shadow-lg rounded-lg flex flex-col justify-center items-center">
       <div className="text-4xl font-extrabold">
         Welcome {isSigninPage && "Back"}
       </div>
@@ -27,7 +31,7 @@ const Form = ({ isSigninPage = false }) => {
             label="Full name"
             name="name"
             placeholder="Enter Your Name"
-            className="mb-6"
+            className="mb-6 w-1/2"
             value={data.fullName}
             onChange={(e) => setData({ ...data, fullName: e.target.value })}
           />
@@ -38,7 +42,7 @@ const Form = ({ isSigninPage = false }) => {
           placeholder="Enter Your Email"
           type="email"
           isRequired="true"
-          className="mb-6"
+          className="mb-6 w-1/2"
           value={data.email}
           onChange={(e) => setData({ ...data, email: e.target.value })}
         />
@@ -48,7 +52,7 @@ const Form = ({ isSigninPage = false }) => {
           placeholder="Enter Your Password"
           type="password"
           isRequired="true"
-          className="mb-14"
+          className="mb-14 w-1/2"
           value={data.password}
           onChange={(e) => setData({ ...data, password: e.target.value })}
         />
@@ -56,17 +60,18 @@ const Form = ({ isSigninPage = false }) => {
         <Button
           label={isSigninPage ? "Sign in" : "Sign up"}
           type="submit"
-          className="w-[50%] mb-2"
+          className="w-1/2 mb-2"
         />
       </form>
 
       <div>
         {isSigninPage ? "Didnt have an account?" : "Already have an account?"}
-        <span className="text-primary cursor-pointer underline">
+        <span className="text-primary cursor-pointer underline" onClick={()=>navigate(`/users/${isSigninPage?'sign_up':'sign_in'}`)}>
           {isSigninPage ? "Sign up" : "Sign in"}
         </span>
       </div>
     </div>
+   </div>
   );
 };
 
