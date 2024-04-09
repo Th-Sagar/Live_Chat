@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+* {
+  scroll-behavior: smooth;
+}
+
+.message::-webkit-scrollbar {
+  width: 4px;
+}
+.message::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1;
+}
