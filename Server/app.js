@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDb from "./db/connection.js";
 import authRouter from "./router/auth-router.js";
+import convRouter from './router/conv-router.js'
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ app.use(express.urlencoded({ extended: false }));
 
 
 app.use("/auth",authRouter);
+app.use('/api',convRouter)
 
 connectDb().then(() => {
   app.listen(port, () => {

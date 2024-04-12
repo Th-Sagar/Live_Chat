@@ -26,7 +26,6 @@ const userController = async (req, res, next) => {
     res.status(400).json({ msg: error });
   }
 };
-
 const loginController = async (req, res,next) => {
   try {
     const { email, password } = req.body;
@@ -58,15 +57,12 @@ const loginController = async (req, res,next) => {
         res.status(200).json({ msg: "Login Successfull", user:{
             email:user.email,
             fullName:user.fullName,
-            
         },
         token:user.token});
       }
-
     }
   } catch (error) {
     res.status(400).json({ msg: error });
   }
 };
-
 export { userController, loginController };
