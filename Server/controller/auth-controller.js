@@ -2,6 +2,7 @@ import User from "../models/user-model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { message } from "./conv-controller.js";
 dotenv.config();
 
 const userController = async (req, res, next) => {
@@ -65,4 +66,30 @@ const loginController = async (req, res,next) => {
     res.status(400).json({ msg: error });
   }
 };
-export { userController, loginController };
+
+
+const readUsers = async(req,res)=>{
+  try {
+    const users = await User.find();
+    const usersData = Promise.all(
+      users.map(async(user)=>{
+        return {
+          user:{
+            email:user.email,
+            fullName:user.fullName
+          },
+          userId:user._id
+        }
+      })
+
+    )
+    res.status(200).json(await usersData);
+    
+  } catch (error) {
+    res.status(400).json({
+      message: error
+    })
+    
+  }
+}
+export { userController, loginController,readUsers };
