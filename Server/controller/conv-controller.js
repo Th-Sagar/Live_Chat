@@ -52,7 +52,29 @@ const conversationId = async (req, res) => {
 
 const message = async (req, res) => {
   try {
-    const { conversationId, senderId, message } = req.body;
+    const { conversationId, senderId, message, receiverId = "" } = req.body;
+
+    if (!senderId || !message) {
+      return res.status(400).json({ message: " SenderId and message " });
+    }
+    if (!conversationId && receiverId) {
+      const newConversation = new Conversations({
+        members: [senderId, receiverId],
+      });
+      await newConversation.save();
+      const newMessage = new Message({
+        conversationId: newConversation._id,
+        senderId,
+        message,
+      });
+      await newMessage.save();
+      return res.status(200).send("Message sent successfully!");
+    } else {
+      return res
+        .status(400)
+        .json({ message: " Please fill all required fields " });
+    }
+
     const newMessage = new Message({ conversationId, senderId, message });
     await newMessage.save();
     res.status(200).json({
@@ -65,30 +87,33 @@ const message = async (req, res) => {
   }
 };
 
-const messageRead= async(req,res)=>{
-    try {
-        const conversationId = req.params.conversationId;
-        const messages = await Message.find({conversationId});
-        const messageUserData = Promise.all(messages.map(async(message)=>{
-            const user = await User.findById(message.senderId);
-            return {
-                user:{
-                    email:user.email,
-                    fullName:user.fullName
-                },
-                message:message.message
-            }
-        }))
-        
-
-        res.status(200).json(await messageUserData);
-    } catch (error) {
-        res.status(400).json({
-            message: error
-        
-        })
-        
+const messageRead = async (req, res) => {
+  try {
+    const conversationId = req.params.conversationId;
+    if (conversationId === "new") {
+      return res.status(200).json([]);
     }
-}
 
-export { conversation, conversationId, message,messageRead };
+    const messages = await Message.find({ conversationId });
+    const messageUserData = Promise.all(
+      messages.map(async (message) => {
+        const user = await User.findById(message.senderId);
+        return {
+          user: {
+            email: user.email,
+            fullName: user.fullName,
+          },
+          message: message.message,
+        };
+      })
+    );
+
+    res.status(200).json(await messageUserData);
+  } catch (error) {
+    res.status(400).json({
+      message: error,
+    });
+  }
+};
+
+export { conversation, conversationId, message, messageRead };

@@ -2,7 +2,6 @@ import User from "../models/user-model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { message } from "./conv-controller.js";
 dotenv.config();
 
 const userController = async (req, res, next) => {
