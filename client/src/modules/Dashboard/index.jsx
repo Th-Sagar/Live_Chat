@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import Avatar from "../../assets/avatar.jpg";
 import Input from "../../components/Input";
@@ -36,6 +36,34 @@ const Dashboard = () => {
       img: Avatar,
     },
   ];
+
+  useEffect(() => {
+    const loggedInUser = JSON.parse(localStorage.getItem("user:detail"));
+    
+
+    const fetchConversation = async () => {
+      const res = await fetch(
+        `http://localhost:8000/api/conversation/${loggedInUser?.id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const resData = await res.json();
+
+      setConversation(resData);
+    };
+
+    fetchConversation();
+  }, []);
+
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("user:detail"))
+  );
+
+  const [conversation, setConversation] = useState([]);
   return (
     <div className="w-screen flex">
       <div className="w-[25%]  h-screen bg-[#f9f8fa]">
@@ -45,8 +73,8 @@ const Dashboard = () => {
           </div>
 
           <div className="ml-8">
-            <h3 className=" text-2xl">Tutorial Dev</h3>
-            <p className="text-lg font-light">My Account</p>
+            <h3 className=" text-2xl">{user.fullName}</h3>
+            <p className="text-lg font-light">{user.email}</p>
           </div>
         </div>
         <hr />
@@ -54,32 +82,35 @@ const Dashboard = () => {
         <div className="mx-14 mt-10">
           <div className=" text-primary text-lg">Messages</div>
           <div>
-            {contacts?.map(({ name, status, img }) => {
-              return (
-                <div
-                  className="flex items-center py-8 border-b border-b-gray-300 "
-                  key={name}
-                >
-                  <div className="cursor-pointer flex items-center">
-                    <div>
-                      <img
-                        src={img}
-                        className="rounded-full"
-                        width={60}
-                        height={60}
-                      />
-                    </div>
+            {conversation.map(
+              ({ conversationId, user}) => {
+               
+                return (
+                  <div
+                    className="flex items-center py-8 border-b border-b-gray-300 "
+                    key={conversationId}
+                  >
+                    <div className="cursor-pointer flex items-center">
+                      <div>
+                        <img
+                          src={Avatar}
+                          className="rounded-full"
+                          width={60}
+                          height={60}
+                        />
+                      </div>
 
-                    <div className="ml-6">
-                      <h3 className=" text-lg font-semibold">{name}</h3>
-                      <p className="text-sm font-light text-gray-600">
-                        {status}
-                      </p>
+                      <div className="ml-6">
+                        <h3 className=" text-lg font-semibold">{user?.fullName}</h3>
+                        <p className="text-sm font-light text-gray-600">
+                          {user?.email}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              }
+            )}
           </div>
         </div>
       </div>
@@ -177,7 +208,7 @@ const Dashboard = () => {
             </svg>
           </div>
 
-          <div  className="ml-4 p-2 cursor-pointer bg-light rounded-full"> 
+          <div className="ml-4 p-2 cursor-pointer bg-light rounded-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

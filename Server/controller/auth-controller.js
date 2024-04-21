@@ -53,6 +53,7 @@ const loginController = async (req, res,next) => {
           );
           user.save();
          return res.status(200).json({ msg: "Login Successfull", user:{
+          id:user._id,
             email:user.email,
             fullName:user.fullName,
         },

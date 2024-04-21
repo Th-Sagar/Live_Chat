@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
-import { useNavigate } from "react-router-dom";
+import { json, useNavigate } from "react-router-dom";
 
 const Form = ({ isSigninPage = false }) => {
   const [data, setData] = useState({
@@ -14,7 +14,7 @@ const Form = ({ isSigninPage = false }) => {
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(data);
+   
     const url = isSigninPage
       ? "http://localhost:8000/auth/login"
       : "http://localhost:8000/auth/register";
@@ -31,7 +31,7 @@ const Form = ({ isSigninPage = false }) => {
     } else {
       if (resData.token) {
         localStorage.setItem("user:token", resData.token);
-        localStorage.setItem("user:detail",resData.user);
+        localStorage.setItem("user:detail",JSON.stringify(resData.user));
         navigate("/");
       }
     }
