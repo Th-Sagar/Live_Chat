@@ -12,20 +12,29 @@ const Form = ({ isSigninPage = false }) => {
     password: "",
   });
   const navigate = useNavigate();
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     console.log(data);
-    const res = await fetch(
-      `http://localhost:8000/auth/${isSigninPage}?"login":"register"`,
-      {
-        method: "POST",
-        headers: {
-          "CONTENT-TYPE": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
+    const url = isSigninPage
+      ? "http://localhost:8000/auth/login"
+      : "http://localhost:8000/auth/register";
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "CONTENT-TYPE": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
     const resData = await res.json();
-    console.log(resData)
+    if (res.status === 400) {
+      alert("Invalid credentials");
+    } else {
+      if (resData.token) {
+        localStorage.setItem("user:token", resData.token);
+        localStorage.setItem("user:detail",resData.user);
+        navigate("/");
+      }
+    }
   };
   return (
     <div className=" bg-light h-screen flex items-center justify-center">
@@ -39,8 +48,9 @@ const Form = ({ isSigninPage = false }) => {
         </div>
 
         <form
+          id={`${isSigninPage ? "loginform" : "registereform"}`}
           className="w-full flex flex-col items-center"
-          onSubmit={() => handleSubmit()}
+          onSubmit={handleSubmit}
         >
           {!isSigninPage && (
             <Input
@@ -49,6 +59,7 @@ const Form = ({ isSigninPage = false }) => {
               placeholder="Enter Your Name"
               className="mb-6 w-3/4"
               value={data.fullName}
+              id={`${isSigninPage ? "loginfullname" : "registerfullname"}`}
               onChange={(e) => setData({ ...data, fullName: e.target.value })}
             />
           )}
@@ -57,7 +68,8 @@ const Form = ({ isSigninPage = false }) => {
             name="email"
             placeholder="Enter Your Email"
             type="email"
-            isRequired="true"
+            isRequired={true}
+            id={`${isSigninPage ? "loginemail" : "registeremail"}`}
             className="mb-6 w-3/4"
             value={data.email}
             onChange={(e) => setData({ ...data, email: e.target.value })}
@@ -66,8 +78,9 @@ const Form = ({ isSigninPage = false }) => {
             label="Password"
             name="password"
             placeholder="Enter Your Password"
+            id={`${isSigninPage ? "loginpassword" : "registerpassword"}`}
             type="password"
-            isRequired="true"
+            isRequired={true}
             className="mb-14 w-3/4"
             value={data.password}
             onChange={(e) => setData({ ...data, password: e.target.value })}

@@ -52,13 +52,13 @@ const loginController = async (req, res,next) => {
             }
           );
           user.save();
-          next();
-        });
-        res.status(200).json({ msg: "Login Successfull", user:{
+         return res.status(200).json({ msg: "Login Successfull", user:{
             email:user.email,
             fullName:user.fullName,
         },
-        token:user.token});
+        token:token});
+        });
+       
       }
     }
   } catch (error) {
