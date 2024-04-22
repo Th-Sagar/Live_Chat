@@ -10,6 +10,7 @@ const Dashboard = () => {
 
   const [conversation, setConversation] = useState([]);
   const [messages, setMessages] = useState({});
+  const [message, setMessage] = useState("");
   useEffect(() => {
     const loggedInUser = JSON.parse(localStorage.getItem("user:detail"));
 
@@ -42,8 +43,26 @@ const Dashboard = () => {
       }
     );
     const resData = await res.json();
+    console.log(conversationId);
+    setMessages({conversationId, messages: resData, receiver: user });
+  };
 
-    setMessages({ messages: resData, receiver: user });
+  const sendMessage = async (e) => {
+    const res = await fetch(`http://localhost:8000/api/message`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        conversationId: messages?.conversationId,
+        senderId: user?.id,
+        message,
+        receiverId: messages?.receiver?.receiverId,
+      }),
+    });
+    const resData = await res.json();
+    console.log(resData);
+    setMessage("");
   };
   return (
     <div className="w-screen flex">
@@ -116,9 +135,13 @@ const Dashboard = () => {
             </div>
 
             <div className=" ml-6 mr-auto">
-              <h3 className=" text-lg font-bold ">{messages?.receiver?.fullName}</h3>
+              <h3 className=" text-lg font-bold ">
+                {messages?.receiver?.fullName}
+              </h3>
 
-              <p className="text-sm font-light text-gray-600">{messages?.receiver?.email}</p>
+              <p className="text-sm font-light text-gray-600">
+                {messages?.receiver?.email}
+              </p>
             </div>
 
             <div className="cursor-pointer ">
@@ -167,53 +190,65 @@ const Dashboard = () => {
             )}
           </div>
         </div>
+        {messages?.receiver?.fullName && (
+          <div className=" p-14 w-full flex items-center  ">
+            <Input
+              className="w-[75%]"
+              placeholder="Type a message..."
+              inputclassName="p-4 border-0 shadow-md rounded-full bg-light foucs:ring-0 focus:border-0 outline-none"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
 
-        <div className=" p-14 w-full flex items-center  ">
-          <Input
-            className="w-[75%]"
-            placeholder="Type a message..."
-            inputclassName="p-4 border-0 shadow-md rounded-full bg-light foucs:ring-0 focus:border-0 outline-none"
-          />
-
-          <div className="ml-4 p-2 cursor-pointer bg-light rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="icon icon-tabler icons-tabler-outline icon-tabler-send"
+            <div
+              className={`ml-4 p-2 cursor-pointer bg-light rounded-full ${
+                !message && "pointer-events-none"
+              }`}
+              onClick={() => sendMessage()}
             >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M10 14l11 -11" />
-              <path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5" />
-            </svg>
-          </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="icon icon-tabler icons-tabler-outline icon-tabler-send"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M10 14l11 -11" />
+                <path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5" />
+              </svg>
+            </div>
 
-          <div className="ml-4 p-2 cursor-pointer bg-light rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="icon icon-tabler icons-tabler-outline icon-tabler-circle-plus"
+            <div
+              className={`ml-4 p-2 cursor-pointer bg-light rounded-full ${
+                !message && "pointer-events-none"
+              }`}
             >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
-              <path d="M9 12h6" />
-              <path d="M12 9v6" />
-            </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="icon icon-tabler icons-tabler-outline icon-tabler-circle-plus"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+                <path d="M9 12h6" />
+                <path d="M12 9v6" />
+              </svg>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="w-[25%]  h-screen bg-light"></div>

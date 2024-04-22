@@ -34,6 +34,7 @@ const conversationId = async (req, res) => {
         const user = await User.findById(receiverId);
         return {
           user: {
+            receiverId: user._id,
             email: user.email,
             fullName: user.fullName,
           },
@@ -69,7 +70,7 @@ const message = async (req, res) => {
       });
       await newMessage.save();
       return res.status(200).send("Message sent successfully!");
-    } else {
+    } else if(!conversationId && !receiverId){
       return res
         .status(400)
         .json({ message: " Please fill all required fields " });
@@ -100,7 +101,7 @@ const messageRead = async (req, res) => {
         const user = await User.findById(message.senderId);
         return {
           user: {
-            id:user._id,
+            id: user._id,
             email: user.email,
             fullName: user.fullName,
           },
