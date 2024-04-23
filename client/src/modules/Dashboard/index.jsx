@@ -48,11 +48,12 @@ const Dashboard = () => {
     fetchUsers();
   }, []);
 
-  const fetchMessages = async (conversationId, user) => {
+  const fetchMessages = async (conversationId, receiver) => {
     const res = await fetch(
-      `http://localhost:8000/api/message/${conversationId}`,
+      `http://localhost:8000/api/message/${conversationId}?senderId=${user?.id}&&receiverId=${receiver?.receiverId}`,
       {
         method: "GET",
+
         headers: {
           "Content-Type": "application/json",
         },
@@ -60,7 +61,7 @@ const Dashboard = () => {
     );
     const resData = await res.json();
 
-    setMessages({ conversationId, messages: resData, receiver: user });
+    setMessages({ conversationId, messages: resData, receiver });
   };
 
   const sendMessage = async (e) => {
@@ -77,7 +78,7 @@ const Dashboard = () => {
       }),
     });
     const resData = await res.json();
-    
+
     setMessage("");
   };
   return (
