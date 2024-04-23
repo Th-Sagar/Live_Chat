@@ -54,11 +54,12 @@ const conversationId = async (req, res) => {
 const message = async (req, res) => {
   try {
     const { conversationId, senderId, message, receiverId = "" } = req.body;
+    console.log(conversationId, senderId, message, receiverId)
 
     if (!senderId || !message) {
       return res.status(400).json({ message: " SenderId and message " });
     }
-    if (!conversationId && receiverId) {
+    if (conversationId==='new' && receiverId) {
       const newConversation = new Conversations({
         members: [senderId, receiverId],
       });

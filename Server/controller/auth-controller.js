@@ -26,7 +26,7 @@ const userController = async (req, res, next) => {
     res.status(400).json({ msg: error });
   }
 };
-const loginController = async (req, res,next) => {
+const loginController = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -52,14 +52,16 @@ const loginController = async (req, res,next) => {
             }
           );
           user.save();
-         return res.status(200).json({ msg: "Login Successfull", user:{
-          id:user._id,
-            email:user.email,
-            fullName:user.fullName,
-        },
-        token:token});
+          return res.status(200).json({
+            msg: "Login Successfull",
+            user: {
+              id: user._id,
+              email: user.email,
+              fullName: user.fullName,
+            },
+            token: token,
+          });
         });
-       
       }
     }
   } catch (error) {
@@ -67,29 +69,31 @@ const loginController = async (req, res,next) => {
   }
 };
 
-
-const readUsers = async(req,res)=>{
+const readUsers = async (req, res) => {
   try {
-    const users = await User.find();
-    const usersData = Promise.all(
-      users.map(async(user)=>{
-        return {
-          user:{
-            email:user.email,
-            fullName:user.fullName
-          },
-          userId:user._id
-        }
-      })
+    const userId = req.params.userId;
 
-    )
+    const users = await User.find({
+      _id: {
+        $ne: userId,
+      },
+    });
+    const usersData = Promise.all(
+      users.map(async (user) => {
+        return {
+          user: {
+            email: user.email,
+            fullName: user.fullName,
+            receiverId: user._id,
+          },
+        };
+      })
+    );
     res.status(200).json(await usersData);
-    
   } catch (error) {
     res.status(400).json({
-      message: error
-    })
-    
+      message: error,
+    });
   }
-}
-export { userController, loginController,readUsers };
+};
+export { userController, loginController, readUsers };

@@ -9,6 +9,7 @@ const Dashboard = () => {
   );
 
   const [conversation, setConversation] = useState([]);
+  const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState({});
   const [message, setMessage] = useState("");
   useEffect(() => {
@@ -32,6 +33,21 @@ const Dashboard = () => {
     fetchConversation();
   }, []);
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const res = await fetch(`http://localhost:8000/auth/users/${user?.id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const resData = await res.json();
+      setUsers(resData);
+    };
+
+    fetchUsers();
+  }, []);
+
   const fetchMessages = async (conversationId, user) => {
     const res = await fetch(
       `http://localhost:8000/api/message/${conversationId}`,
@@ -43,8 +59,8 @@ const Dashboard = () => {
       }
     );
     const resData = await res.json();
-    console.log(conversationId);
-    setMessages({conversationId, messages: resData, receiver: user });
+
+    setMessages({ conversationId, messages: resData, receiver: user });
   };
 
   const sendMessage = async (e) => {
@@ -61,7 +77,7 @@ const Dashboard = () => {
       }),
     });
     const resData = await res.json();
-    console.log(resData);
+    
     setMessage("");
   };
   return (
@@ -250,8 +266,50 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+      <div className="w-[25%]  h-screen bg-light px-8 py-16">
+        <div className="mx-14 mt-10">
+          <div className=" text-primary text-lg">People</div>
+          <div>
+            {users.length > 0 ? (
+              users.map(({ userId, user }) => {
+                return (
+                  <div
+                    className="flex items-center py-8 border-b border-b-gray-300 "
+                    key={userId}
+                  >
+                    <div
+                      className="cursor-pointer flex items-center"
+                      onClick={() => fetchMessages("new", user)}
+                    >
+                      <div>
+                        <img
+                          src={Avatar}
+                          className="rounded-full"
+                          width={60}
+                          height={60}
+                        />
+                      </div>
 
-      <div className="w-[25%]  h-screen bg-light"></div>
+                      <div className="ml-6">
+                        <h3 className=" text-lg font-semibold">
+                          {user?.fullName}
+                        </h3>
+                        <p className="text-sm font-light text-gray-600">
+                          {user?.email}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center text-lg font-semibold mt-24">
+                No conversation
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
