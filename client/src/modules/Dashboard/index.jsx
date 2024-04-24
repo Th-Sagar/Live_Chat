@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-
+import React, { useEffect, useMemo, useState } from "react";
 import Avatar from "../../assets/avatar.jpg";
 import Input from "../../components/Input";
+import { io } from "socket.io-client";
 
 const Dashboard = () => {
   const [user, setUser] = useState(
@@ -12,6 +12,33 @@ const Dashboard = () => {
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState({});
   const [message, setMessage] = useState("");
+
+  const [socket, setSocket] = useState(null);
+  console.log(messages);
+  useEffect(() => {
+    setSocket(io("http://localhost:8000"));
+  }, []);
+
+  useEffect(() => {
+    socket?.emit("addUser", user?.id);
+    socket?.on("getUsers", (users) => {
+      console.log("active users ", users);
+    });
+    socket?.on("getMessage", (data) => {
+      console.log(data);
+      setMessages((prev) => ({
+        ...prev,
+        messages: [
+          ...prev.messages,
+          {
+            user:data.user,
+            message: data.message,
+          },
+        ],
+      }));
+    });
+  }, [socket]);
+
   useEffect(() => {
     const loggedInUser = JSON.parse(localStorage.getItem("user:detail"));
 
@@ -65,6 +92,12 @@ const Dashboard = () => {
   };
 
   const sendMessage = async (e) => {
+    socket?.emit("sendMessage", {
+      senderId: user?.id,
+      receiverId: messages?.receiver?.receiverId,
+      message,
+      conversationId: messages?.conversationId,
+    });
     const res = await fetch(`http://localhost:8000/api/message`, {
       method: "POST",
       headers: {
