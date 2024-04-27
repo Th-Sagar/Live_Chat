@@ -31,7 +31,7 @@ const Dashboard = () => {
         messages: [
           ...prev.messages,
           {
-            user:data.user,
+            user: data.user,
             message: data.message,
           },
         ],
