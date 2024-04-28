@@ -14,7 +14,7 @@ const Form = ({ isSigninPage = false }) => {
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
-   
+
     const url = isSigninPage
       ? "http://localhost:8000/auth/login"
       : "http://localhost:8000/auth/register";
@@ -31,7 +31,7 @@ const Form = ({ isSigninPage = false }) => {
     } else {
       if (resData.token) {
         localStorage.setItem("user:token", resData.token);
-        localStorage.setItem("user:detail",JSON.stringify(resData.user));
+        localStorage.setItem("user:detail", JSON.stringify(resData.user));
         navigate("/");
       }
     }
